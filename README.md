@@ -119,7 +119,7 @@ Recommended Zenodo description:
 
 If archived in Zenodo, replace the DOI placeholder below:
 
-> D. R. Hermanus, S. H. Supangkat, and F. Hidayat, Drone-AI Ensemble Anomaly Detection Prototype for Smart X Situational Intelligence, Zenodo, 2026. DOI: [replace with Zenodo DOI].
+> D. R. Hermanus, S. H. Supangkat, and F. Hidayat, Drone-AI Ensemble Anomaly Detection Prototype for Smart X Situational Intelligence, Zenodo, 2026. DOI: 10.5281/zenodo.21058030.
 
 ## Disclaimer
 
