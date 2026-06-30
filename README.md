@@ -135,4 +135,4 @@ The data provided in this repository are simulated pollutant-weather, telemetry,
 
 ## Suggested repository citation
 
-Hermanus, D. R., Supangkat, S. H., & Hidayat, F. (2026). *Drone AI Situational Intelligence Layer for Smart X: Streamlit Prototype and Simulated Dataset* (Version 1.0.0). Zenodo. DOI: to be added after release.
+Hermanus, D. R., Supangkat, S. H., and Hidayat, F., Drone AI Situational Intelligence Layer for Smart X: Streamlit Prototype and Simulated Dataset, Version 1.0.0, Zenodo, 2026, doi: 10.5281/zenodo.21058030.
