@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21058030.svg)](https://doi.org/10.5281/zenodo.21058030)
 # Drone-AI Ensemble Anomaly Detection Prototype
 
 This repository contains a lightweight Streamlit prototype for illustrating the paper concept: **Drone-AI as a situational intelligence layer for Smart X**. The app uses simulated drone sensing data and simulated drone-view images to demonstrate a sensing-to-decision workflow.
