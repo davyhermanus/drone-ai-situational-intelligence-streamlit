@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this software or simulated dataset, please cite it using the metadata below."
+title: "Drone AI Situational Intelligence Layer for Smart X: Streamlit Prototype and Simulated Dataset"
+type: software
+authors:
+  - family-names: Hermanus
+    given-names: Davy Ronald
+    email: davy.hermanus@binus.ac.id
+    affiliation: "School of Electrical Engineering and Informatics, Institut Teknologi Bandung, Indonesia; School of Computer Science, Bina Nusantara University, Indonesia"
+  - family-names: Supangkat
+    given-names: Suhono Harso
+    affiliation: "School of Electrical Engineering and Informatics, Institut Teknologi Bandung, Indonesia"
+  - family-names: Hidayat
+    given-names: Fadhil
+    affiliation: "School of Electrical Engineering and Informatics, Institut Teknologi Bandung, Indonesia"
+abstract: "A reproducible Streamlit prototype for Drone-AI ensemble anomaly detection using simulated pollutant-weather sensing data and drone-image features for Smart X situational intelligence."
+keywords:
+  - Drone AI
+  - Smart X
+  - situational intelligence
+  - ensemble anomaly detection
+  - Streamlit
+  - simulated dataset
+license: MIT
+version: 1.0.0
+date-released: 2026-06-30
+repository-code: "https://github.com/USERNAME/drone-ai-situational-intelligence-streamlit"

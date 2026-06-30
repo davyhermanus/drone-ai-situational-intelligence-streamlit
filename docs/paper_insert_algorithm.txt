@@ -1,0 +1,44 @@
+Suggested paper addition for the IJ-AI version
+============================================
+
+Suggested subsection title:
+
+3.4. Illustrative Streamlit prototype for ensemble anomaly detection
+
+Suggested narrative:
+
+To illustrate how the proposed architecture can be operationalized, a lightweight Streamlit prototype was developed using simulated drone sensing data. The prototype is not intended to represent a complete field deployment. Instead, it demonstrates how two sensing branches can be connected in a reproducible sensing-to-decision workflow. The first branch analyzes pollutant and microclimate variables, including PM2.5, PM10, CO2, NO2, SO2, VOC, temperature, humidity, wind speed, altitude, and telemetry. The second branch analyzes simulated drone-view images by extracting simple visual features, including red intensity, smoke index, brightness, contrast, texture, and edge density. Each branch produces an anomaly score using an unsupervised Isolation Forest model combined with rule-based domain thresholds. The final ensemble score is obtained by combining the pollutant score and the image score. The output is then mapped into operational status levels, namely normal, watch, warning, and critical, before being reviewed through a human-in-the-loop validation step. The prototype therefore demonstrates how the proposed Drone-AI architecture can connect multimodal sensing, AI-based anomaly interpretation, and human-validated decision support.
+
+Suggested algorithm:
+
+Algorithm 1. Drone-AI ensemble anomaly detection prototype
+
+Input:
+    Simulated pollutant, weather, telemetry, and drone-image data.
+Output:
+    Ensemble anomaly score, operational status, recommendation, and human validation log.
+
+Procedure:
+    1. Load simulated drone sensing records and drone-view images.
+    2. Extract pollutant-weather features from the sensing table.
+    3. Extract visual anomaly features from each drone image.
+    4. Train an Isolation Forest model for pollutant-weather anomaly scoring.
+    5. Compute a rule-based pollutant threshold score using PM2.5, PM10, CO2, NO2, SO2, and VOC limits.
+    6. Combine the pollutant model score and pollutant rule score into a pollutant anomaly score.
+    7. Train an Isolation Forest model for image anomaly scoring.
+    8. Compute a rule-based image score using red intensity, smoke index, brightness, and contrast.
+    9. Combine the image model score and image rule score into an image anomaly score.
+   10. Fuse pollutant and image anomaly scores into a final ensemble anomaly score.
+   11. Assign the operational status as normal, watch, warning, or critical.
+   12. Present the output through a Streamlit dashboard, including map, time series, image review, and recommendation.
+   13. Record operator feedback through a human-in-the-loop validation form.
+
+The ensemble score can be expressed as:
+
+S_ensemble = alpha S_pollutant + (1 - alpha) S_image
+
+where S_pollutant is the pollutant-weather anomaly score, S_image is the drone-image anomaly score, and alpha is the weighting factor. In the prototype, alpha is set to 0.60 to prioritize pollutant-weather evidence while still retaining image-based anomaly information.
+
+Suggested data availability statement:
+
+The synthetic dataset and Streamlit prototype code used to illustrate the proposed Drone-AI anomaly detection workflow will be made available through GitHub and archived in Zenodo. The dataset contains only simulated pollutant, weather, telemetry, and drone-view image data and does not include field measurements or personal data.

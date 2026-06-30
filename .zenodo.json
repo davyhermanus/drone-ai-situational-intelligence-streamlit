@@ -1,0 +1,30 @@
+{
+  "title": "Drone AI Situational Intelligence Layer for Smart X: Streamlit Prototype and Simulated Dataset",
+  "upload_type": "software",
+  "description": "A reproducible Streamlit prototype for Drone-AI ensemble anomaly detection using simulated pollutant-weather sensing data and drone-image features. The package supports a sensing-to-decision workflow for Smart X situational intelligence and includes simulated data, source code, requirements, and documentation.",
+  "creators": [
+    {
+      "name": "Hermanus, Davy Ronald",
+      "affiliation": "School of Electrical Engineering and Informatics, Institut Teknologi Bandung, Indonesia; School of Computer Science, Bina Nusantara University, Indonesia"
+    },
+    {
+      "name": "Supangkat, Suhono Harso",
+      "affiliation": "School of Electrical Engineering and Informatics, Institut Teknologi Bandung, Indonesia"
+    },
+    {
+      "name": "Hidayat, Fadhil",
+      "affiliation": "School of Electrical Engineering and Informatics, Institut Teknologi Bandung, Indonesia"
+    }
+  ],
+  "keywords": [
+    "Drone AI",
+    "Smart X",
+    "situational intelligence",
+    "ensemble anomaly detection",
+    "Streamlit",
+    "simulated dataset"
+  ],
+  "license": "MIT",
+  "version": "1.0.0",
+  "related_identifiers": []
+}
