@@ -1,5 +1,14 @@
+
+## Experimental v1.3.0 candidate (not yet archived)
+
+- Revises the synthetic mission generator to include weak/moderate/strong event intensity, partial modality conflict, and limited overlap with elevated normal background conditions.
+- Preserves the 160-record mission and the original three event windows.
+- Fits the baseline scaler and Isolation Forest models once and reuses them for perturbation testing.
+- Robustness at 5%, 10%, and 20% is summarized across 30 independent Gaussian feature-noise realizations rather than a single random seed.
+- The revision is intended to avoid trivially separable synthetic labels; it does not target any predetermined accuracy or F1 score.
+
 # Advanced Drone Sensing Framework for Smart X Situational Intelligence
-## Streamlit Reproducibility Package — Version 1.2.0
+## Streamlit Reproducibility Package — Experimental Version 1.3.0
 
 This release is the reproducibility package associated with the revised manuscript **“Advanced Drone Sensing Framework for Smart X Situational Intelligence.”** It preserves the controlled synthetic experiment and Streamlit prototype used to support the quantitative results reported in the paper.
 
@@ -49,9 +58,9 @@ Running `experiment_runner.py` regenerates the paper-supporting outputs in `outp
 - `modality_ablation.csv`
 - `noise_robustness.csv`
 
-The baseline yields 114 true negatives, 46 true positives, 0 false positives, and 0 false negatives. Accuracy, precision, recall, F1-score, ROC-AUC, and PR-AUC are 1.000 to the precision reported in the manuscript. These values demonstrate internal consistency with controlled synthetic labels, not field accuracy.
+The experimental v1.3.0 baseline yields 114 true negatives, 32 true positives, 0 false positives, and 14 false negatives. Accuracy = 0.9125, precision = 1.0000, recall = 0.6957, F1-score = 0.8205, ROC-AUC = 0.9773, and PR-AUC = 0.9592. These values assess agreement with controlled synthetic labels and must not be interpreted as field accuracy.
 
-Alpha sensitivity evaluates 0.20, 0.40, 0.50, 0.60, and 0.80. Modality ablation compares pollutant-weather only, image-feature only, and the baseline ensemble. Controlled feature-space perturbation is evaluated at 0%, 5%, 10%, and 20%.
+Alpha sensitivity evaluates 0.20, 0.40, 0.50, 0.60, and 0.80. Modality ablation compares pollutant-weather only, image-feature only, and the baseline ensemble. Controlled feature-space perturbation is evaluated at 0%, 5%, 10%, and 20%. For 5–20% noise, the fixed clean-baseline scaler and Isolation Forest models are reused across 30 independent perturbation realizations; the models are not re-fitted for each noisy realization.
 
 ## Folder structure
 
@@ -118,4 +127,21 @@ streamlit run app.py
 
 ## Citation
 
-After this release is published in Zenodo, cite the **new version DOI assigned by Zenodo**. Do not reuse an earlier version DOI as the identifier for Version 1.2.0.
+After this release is published in Zenodo, cite the **new version DOI assigned by Zenodo**. Do not reuse an earlier version DOI as the identifier for Version 1.3.0.
+
+## v1.3.1 single-drone YOLO smoke extension
+
+This candidate adds an optional **single-drone raw-image smoke-inference tab**. It expects the previously trained Boreal Forest Fire UAV `best.pt` weights at `models/best.pt` (or another user-specified path). The v1.3 synthetic pollutant-weather experiments, sensitivity, ablation, and fixed-model robustness tests are unchanged.
+
+The extension deliberately excludes the later 1–4 drone selection and multi-drone collaboration work so that the current IJ-AI resubmission can remain within a compact single-drone scope.
+
+
+## v1.3.2 corrected single-drone YOLO evidence reporting
+
+- Separates **candidate smoke boxes** from **accepted smoke detections**.
+- Keeps the low-level YOLO candidate threshold separate from the accepted-smoke reporting threshold.
+- Treats the default accepted threshold as provisional until a held-out batch validation is completed.
+- Computes candidate and accepted **bounding-box coverage ratios from the union of boxes**, preventing overlap double-counting.
+- Explicitly states that bounding-box coverage is not smoke-pixel segmentation.
+- Keeps the visual score as maximum candidate smoke confidence; coverage is not blended into the score.
+- Leaves the controlled v1.3 Isolation-Forest baseline, alpha sensitivity, modality ablation, and robustness experiments unchanged.

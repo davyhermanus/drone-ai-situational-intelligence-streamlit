@@ -6,6 +6,9 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from PIL import Image
+
+from single_drone_yolo import run_smoke_inference, visual_status, append_inference_log
 
 from model_core import (
     ModelConfig,
@@ -24,7 +27,9 @@ SENSOR = DATA / "simulated_drone_sensing.csv"
 FEATURES = DATA / "image_features.csv"
 VALIDATIONS = OUTPUTS / "human_validation_log.csv"
 DATA_DICTIONARY = BASE / "data_dictionary.csv"
-APP_VERSION = "1.1.1"
+APP_VERSION = "1.3.3"
+YOLO_WEIGHTS = BASE / "models" / "best.pt"
+YOLO_LOG = OUTPUTS / "single_drone_yolo_inference.csv"
 
 
 def apply_high_contrast_style() -> None:
@@ -153,8 +158,9 @@ def main() -> None:
 
     st.title(f"Drone-AI Situational Intelligence Prototype v{APP_VERSION}")
     st.caption(
-        "Controlled synthetic scenarios with two-branch anomaly scoring, sensitivity analysis, "
-        "ablation, robustness testing, and persistent human validation."
+        "Controlled synthetic scenarios with heterogeneous event intensity, two-branch anomaly scoring, "
+        "repeated fixed-model robustness testing, persistent human validation, and an optional single-drone "
+        "YOLO smoke-inference module grounded in the Boreal Forest Fire UAV dataset."
     )
 
     with st.sidebar:
@@ -198,6 +204,7 @@ def main() -> None:
             "Sensitivity and ablation",
             "Robustness",
             "Human validation",
+            "Single-drone YOLO smoke",
             "Data and reproducibility",
         ]
     )
@@ -318,14 +325,43 @@ def main() -> None:
             "four-level operational status agreement are reported separately.</div>",
             unsafe_allow_html=True,
         )
-        st.dataframe(noise_df, use_container_width=True, hide_index=True)
+        noise_display = noise_df.copy()
+        noise_display["Noise"] = (noise_display["noise_level"] * 100).round().astype(int).astype(str) + "%"
+
+        def mean_sd(mean_col: str, sd_col: str) -> pd.Series:
+            values = []
+            for _, row in noise_display.iterrows():
+                mean = float(row[mean_col])
+                sd = float(row[sd_col])
+                if sd == 0:
+                    values.append(f"{mean:.4f}")
+                else:
+                    values.append(f"{mean:.4f} ± {sd:.4f}")
+            return pd.Series(values, index=noise_display.index)
+
+        compact_noise = pd.DataFrame({
+            "Noise": noise_display["Noise"],
+            "Accuracy": mean_sd("accuracy", "accuracy_sd"),
+            "Precision": mean_sd("precision", "precision_sd"),
+            "Recall": mean_sd("recall", "recall_sd"),
+            "F1-score": mean_sd("f1", "f1_sd"),
+            "ROC-AUC": mean_sd("roc_auc", "roc_auc_sd"),
+            "PR-AUC": mean_sd("pr_auc", "pr_auc_sd"),
+            "Status agreement": mean_sd("status_agreement", "status_agreement_sd"),
+        })
+        st.dataframe(compact_noise, use_container_width=True, hide_index=True)
+        st.caption("Values are mean ± SD across 30 perturbation realizations for 5–20% noise; the 0% row is the single clean baseline run.")
+
+        noise_plot = noise_df.copy()
+        noise_plot["noise_percent"] = noise_plot["noise_level"] * 100
         noise_fig = px.line(
-            noise_df,
-            x="noise_level",
+            noise_plot,
+            x="noise_percent",
             y=["f1", "roc_auc", "status_agreement"],
             markers=True,
-            labels={"value": "Metric value", "variable": "Metric", "noise_level": "Noise level"},
+            labels={"value": "Metric value", "variable": "Metric", "noise_percent": "Noise level (%)"},
         )
+        noise_fig.update_xaxes(tickvals=[0, 5, 10, 20], ticktext=["0%", "5%", "10%", "20%"] )
         noise_fig.update_layout(font=dict(size=14), height=430)
         st.plotly_chart(noise_fig, use_container_width=True)
 
@@ -386,6 +422,130 @@ def main() -> None:
             )
 
     with tabs[5]:
+        st.subheader("Single-drone YOLO smoke evidence")
+        st.markdown(
+            '<div class="section-note"><b>Scope:</b> this module evaluates one drone image at a time using a frozen smoke detector. '
+            'It does not implement multi-drone selection or collaborative view fusion.</div>',
+            unsafe_allow_html=True,
+        )
+        st.caption(
+            "Place the previously trained smoke-detector weights at models/best.pt. "
+            "The Boreal Forest Fire UAV model is used only as empirical visual evidence; "
+            "the controlled pollutant-weather experiment remains unchanged."
+        )
+        st.info(
+            "This YOLO module is an empirical single-drone extension. It does not replace the "
+            "synthetic image-feature branch used in the v1.3 quantitative sensitivity, ablation, "
+            "and robustness experiments."
+        )
+        weights_text = st.text_input("YOLO weights path", value=str(YOLO_WEIGHTS))
+        cconf, caccept, ciou = st.columns(3)
+        with cconf:
+            yolo_candidate_conf = st.slider(
+                "Candidate box threshold", 0.05, 0.90, 0.25, 0.05,
+                help="Low-level YOLO inference threshold. Boxes above this value are shown as candidates."
+            )
+        with caccept:
+            yolo_accept_conf = st.slider(
+                "Accepted smoke threshold", 0.05, 0.95, 0.45, 0.05,
+                help=(
+                    "Reporting threshold for accepted smoke evidence. This is independent from the "
+                    "candidate threshold and remains provisional until batch validation."
+                )
+            )
+        with ciou:
+            yolo_iou = st.slider("YOLO IoU threshold", 0.10, 0.90, 0.45, 0.05)
+
+        if yolo_accept_conf < yolo_candidate_conf:
+            st.warning("Accepted smoke threshold should be >= candidate box threshold.")
+
+        upload = st.file_uploader("Upload one single-drone image", type=["jpg", "jpeg", "png", "webp"])
+
+        if upload is not None:
+            image = Image.open(upload).convert("RGB")
+            left_y, right_y = st.columns([1.1, 1])
+            with left_y:
+                st.image(image, caption=f"Input: {upload.name}", use_container_width=True)
+            try:
+                yolo_result = run_smoke_inference(
+                    image=image,
+                    weights_path=Path(weights_text),
+                    candidate_confidence_threshold=yolo_candidate_conf,
+                    accepted_confidence_threshold=yolo_accept_conf,
+                    iou_threshold=yolo_iou,
+                )
+                yolo_state = visual_status(yolo_result.visual_score, watch, warning, critical)
+                with right_y:
+                    m1, m2 = st.columns(2)
+                    m1.metric("Candidate smoke boxes", yolo_result.candidate_count)
+                    m2.metric("Accepted smoke detections", yolo_result.accepted_count)
+                    m3, m4 = st.columns(2)
+                    m3.metric("Max confidence", f"{yolo_result.max_confidence:.3f}")
+                    m4.metric("Visual evidence level", yolo_state)
+                    m5, m6 = st.columns(2)
+                    m5.metric("Candidate bbox coverage", f"{yolo_result.candidate_bbox_coverage_ratio:.3f}")
+                    m6.metric("Accepted bbox coverage", f"{yolo_result.accepted_bbox_coverage_ratio:.3f}")
+                    st.write(
+                        f"Visual score = **{yolo_result.visual_score:.3f}** (maximum candidate smoke confidence). "
+                        "Accepted boxes are shown in green and candidate-only boxes are shown in orange. Coverage is computed from the union of bounding boxes, so overlap is counted once. "
+                        "Coverage is contextual evidence only, not a smoke-pixel segmentation estimate, "
+                        "and is not blended into the visual score."
+                    )
+                    st.caption(
+                        "Candidate and accepted thresholds are intentionally separated. "
+                        "The accepted-smoke threshold is provisional until held-out batch validation."
+                    )
+                st.image(yolo_result.annotated_rgb, caption="YOLO smoke inference", use_container_width=True)
+                if not yolo_result.detections.empty:
+                    st.dataframe(
+                        yolo_result.detections.style.format(
+                            {"confidence": "{:.4f}", "box_area_ratio": "{:.4f}"}
+                        ),
+                        use_container_width=True, hide_index=True
+                    )
+                else:
+                    st.info("No smoke candidate box passed the selected candidate threshold.")
+
+                if st.button("Save single-drone inference record"):
+                    append_inference_log(
+                        YOLO_LOG,
+                        {
+                            "image_name": upload.name,
+                            "weights_path": weights_text,
+                            "candidate_confidence_threshold": yolo_candidate_conf,
+                            "accepted_confidence_threshold": yolo_accept_conf,
+                            "iou_threshold": yolo_iou,
+                            "candidate_smoke_boxes": yolo_result.candidate_count,
+                            "accepted_smoke_detections": yolo_result.accepted_count,
+                            "max_confidence": yolo_result.max_confidence,
+                            "mean_confidence": yolo_result.mean_confidence,
+                            "candidate_bbox_coverage_ratio": yolo_result.candidate_bbox_coverage_ratio,
+                            "accepted_bbox_coverage_ratio": yolo_result.accepted_bbox_coverage_ratio,
+                            "visual_score": yolo_result.visual_score,
+                            "visual_evidence_level": yolo_state,
+                        },
+                    )
+                    st.success("Inference record saved to outputs/single_drone_yolo_inference.csv")
+            except FileNotFoundError:
+                st.error(
+                    "best.pt was not found. Copy your previously trained Boreal smoke detector to models/best.pt "
+                    "or enter its full path above."
+                )
+            except Exception as exc:
+                st.error(f"YOLO inference failed: {exc}")
+
+        if YOLO_LOG.exists():
+            st.subheader("Single-drone inference log")
+            ylog = pd.read_csv(YOLO_LOG)
+            st.dataframe(ylog, use_container_width=True, hide_index=True)
+            st.download_button(
+                "Download YOLO inference log",
+                ylog.to_csv(index=False).encode(),
+                file_name="single_drone_yolo_inference.csv",
+                mime="text/csv",
+            )
+
+    with tabs[6]:
         st.subheader("Model and experiment configuration")
         st.dataframe(configuration_table(cfg), use_container_width=True, hide_index=True)
 
@@ -456,8 +616,9 @@ def main() -> None:
                 )
 
         st.info(
-            "All inputs are synthetic. Digital Twin, data lakehouse, and distributed edge-cloud operation "
-            "remain architectural-readiness components rather than fully implemented services."
+            "The controlled mission inputs are synthetic. The optional single-drone YOLO tab accepts empirical raw images "
+            "and requires the previously trained best.pt weights. Digital Twin, data lakehouse, and distributed edge-cloud "
+            "operation remain architectural-readiness components rather than fully implemented services."
         )
 
     st.markdown(

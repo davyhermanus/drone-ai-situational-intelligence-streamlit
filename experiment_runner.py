@@ -1,14 +1,16 @@
 from pathlib import Path
 import json
 import pandas as pd
-from model_core import ModelConfig, compute_anomaly_scores, evaluate_scores, run_experiment_grid, scenario_detection
+from model_core import (ModelConfig, evaluate_scores, fit_anomaly_model,
+                        score_with_fitted_model, run_experiment_grid, scenario_detection)
 
 BASE=Path(__file__).resolve().parent
 DATA=BASE/'data'; OUT=BASE/'outputs'; OUT.mkdir(exist_ok=True)
 sensor=pd.read_csv(DATA/'simulated_drone_sensing.csv',parse_dates=['timestamp'])
 features=pd.read_csv(DATA/'image_features.csv')
 cfg=ModelConfig()
-df=compute_anomaly_scores(sensor,features,cfg)
+fitted=fit_anomaly_model(sensor,features,cfg)
+df=score_with_fitted_model(sensor,features,cfg,fitted)
 metrics=evaluate_scores(df)
 alpha,ablation,noise=run_experiment_grid(sensor,features,cfg)
 scenario=scenario_detection(df)
