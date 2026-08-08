@@ -1,138 +1,121 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21058030.svg)](https://doi.org/10.5281/zenodo.21058030)
-# Drone-AI Ensemble Anomaly Detection Prototype
+# Advanced Drone Sensing Framework for Smart X Situational Intelligence
+## Streamlit Reproducibility Package — Version 1.2.0
 
-This repository contains a lightweight Streamlit prototype for illustrating the paper concept: **Drone-AI as a situational intelligence layer for Smart X**. The app uses simulated drone sensing data and simulated drone-view images to demonstrate a sensing-to-decision workflow.
+This release is the reproducibility package associated with the revised manuscript **“Advanced Drone Sensing Framework for Smart X Situational Intelligence.”** It preserves the controlled synthetic experiment and Streamlit prototype used to support the quantitative results reported in the paper.
 
-The prototype is intended for reproducibility, GitHub sharing, and Zenodo archiving. It is **not field data** and should be described as a conceptual proof-of-concept or illustrative prototype.
+## Scope of this release
 
-## What the prototype does
+The package contains **controlled synthetic data and generated sample images only**. It does **not** contain field measurements and must not be interpreted as field validation, deployment certification, or evidence of operational accuracy in real missions.
 
-The app demonstrates a simple ensemble anomaly detection workflow using two sensing branches:
+The implemented prototype demonstrates a closed sensing-to-decision workflow with:
 
-1. **Pollutant and weather anomaly branch**
-   - Uses simulated telemetry, pollutants, and microclimate data.
-   - Detects anomalies using an Isolation Forest model and rule-based threshold signals.
-   - Variables include PM2.5, PM10, CO2, NO2, SO2, VOC, temperature, humidity, wind speed, altitude, latitude, and longitude.
+1. **Pollutant-weather anomaly branch**
+   - ten standardized features: PM2.5, PM10, CO2, NO2, SO2, VOC, temperature, humidity, wind speed, and altitude;
+   - a 200-tree Isolation Forest with contamination 0.10 and random seed 12;
+   - a transparent pollutant rule score;
+   - branch fusion using 0.72 Isolation-Forest evidence and 0.28 rule evidence.
 
-2. **Drone image anomaly branch**
-   - Uses simulated drone images generated as simple aerial scenes.
-   - Extracts lightweight visual features such as red intensity, smoke/darkness index, brightness, contrast, texture, and edge density.
-   - Detects visual anomalies using an Isolation Forest model and simple image rules.
+2. **Image-feature anomaly branch**
+   - six lightweight descriptors: red index, smoke index, brightness, contrast, texture, and edge density;
+   - a 200-tree Isolation Forest with contamination 0.10 and random seed 24;
+   - a transparent visual rule score;
+   - branch fusion using 0.70 Isolation-Forest evidence and 0.30 rule evidence.
 
 3. **Ensemble decision layer**
-   - Combines pollutant anomaly score and image anomaly score.
-   - Produces normal, watch, warning, or critical status.
-   - Includes a human-in-the-loop field for validation decisions.
+   - baseline pollutant-weather weight alpha = 0.60;
+   - operational thresholds: Watch = 0.45, Warning = 0.60, Critical = 0.75;
+   - Normal, Watch, Warning, and Critical status mapping;
+   - recommendation generation and persistent human-validation records.
+
+## Controlled mission
+
+The frozen controlled mission contains **160 records at two-minute intervals (318 minutes)**:
+
+- 114 normal records;
+- 18 pollution-plume anomaly records;
+- 16 fire-smoke anomaly records;
+- 12 industrial-dust anomaly records.
+
+The experiment evaluates agreement with these known synthetic labels. It does not report field-validated performance.
+
+## Quantitative outputs
+
+Running `experiment_runner.py` regenerates the paper-supporting outputs in `outputs/`:
+
+- `baseline_metrics.json`
+- `baseline_scored_mission.csv`
+- `scenario_detection.csv`
+- `alpha_sensitivity.csv`
+- `modality_ablation.csv`
+- `noise_robustness.csv`
+
+The baseline yields 114 true negatives, 46 true positives, 0 false positives, and 0 false negatives. Accuracy, precision, recall, F1-score, ROC-AUC, and PR-AUC are 1.000 to the precision reported in the manuscript. These values demonstrate internal consistency with controlled synthetic labels, not field accuracy.
+
+Alpha sensitivity evaluates 0.20, 0.40, 0.50, 0.60, and 0.80. Modality ablation compares pollutant-weather only, image-feature only, and the baseline ensemble. Controlled feature-space perturbation is evaluated at 0%, 5%, 10%, and 20%.
 
 ## Folder structure
 
 ```text
-drone_ai_anomaly_streamlit/
+.
 ├── app.py
+├── model_core.py
+├── experiment_runner.py
 ├── requirements.txt
-├── README.md
+├── requirements-lock.txt
+├── data_dictionary.csv
 ├── data/
 │   ├── simulated_drone_sensing.csv
 │   ├── image_features.csv
 │   └── images/
-│       ├── frame_000.png
-│       ├── frame_001.png
-│       └── ...
-└── docs/
-    └── paper_insert_algorithm.txt
+├── outputs/
+│   ├── baseline_metrics.json
+│   ├── baseline_scored_mission.csv
+│   ├── scenario_detection.csv
+│   ├── alpha_sensitivity.csv
+│   ├── modality_ablation.csv
+│   └── noise_robustness.csv
+├── logs/
+├── docs/
+├── LICENSE
+├── LICENSE-DATA.md
+├── CITATION.cff
+├── RELEASE_NOTES.md
+└── MANUSCRIPT_ALIGNMENT.md
 ```
 
-## Setup from a new Python environment
+## Reproduce the experiment
 
-### 1. Create a project folder
-
-```bash
-mkdir drone_ai_anomaly_streamlit
-cd drone_ai_anomaly_streamlit
-```
-
-If you downloaded the ZIP file, extract it first and enter the extracted folder.
-
-### 2. Create a virtual environment
-
-#### Windows PowerShell
-
-```bash
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-```
-
-#### Windows Command Prompt
-
-```bash
-python -m venv .venv
-.venv\Scripts\activate.bat
-```
-
-#### macOS / Linux
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 3. Install dependencies
+Create a Python environment and install the locked dependencies:
 
 ```bash
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r requirements-lock.txt
 ```
 
-### 4. Run the Streamlit app
+Run the controlled experiment:
+
+```bash
+python experiment_runner.py
+```
+
+Run the Streamlit prototype:
 
 ```bash
 streamlit run app.py
 ```
 
-Then open the local URL shown in the terminal, usually:
+## Interpretation boundaries
 
-```text
-http://localhost:8501
-```
+- All sensing variables and image examples in this release are synthetic.
+- Perfect baseline metrics reflect the deliberately controlled event-generation and scoring setting.
+- Digital Twin, Data Lakehouse, and distributed edge-cloud services are architectural-readiness concepts in the paper and are not production services in this release.
+- The prototype is for reproducibility and research demonstration only and must not be used for real environmental, emergency, or safety decisions.
 
-## Regenerating the simulated dataset
+## Licensing
 
-The package already includes simulated CSV data and images. The app also provides a sidebar button to regenerate the synthetic mission data. Regeneration is deterministic when the same random seed is used.
+- Source code: MIT License (`LICENSE`).
+- Synthetic data and generated sample images: CC BY 4.0 (`LICENSE-DATA.md`).
 
-## Notes for GitHub and Zenodo
+## Citation
 
-Recommended files to upload:
-
-- `app.py`
-- `requirements.txt`
-- `README.md`
-- `data/simulated_drone_sensing.csv`
-- `data/image_features.csv`
-- `data/images/*.png`
-- `docs/paper_insert_algorithm.txt`
-
-Recommended Zenodo description:
-
-> This dataset and code package provides a simulated Drone-AI anomaly detection prototype for Smart X situational intelligence. It contains synthetic pollutant, weather, telemetry, and drone-view image data, together with a Streamlit implementation of a two-branch ensemble anomaly detection workflow. The data are simulated and are not field measurements.
-
-## Suggested citation text
-
-If archived in Zenodo, replace the DOI placeholder below:
-
-> D. R. Hermanus, S. H. Supangkat, and F. Hidayat, Drone-AI Ensemble Anomaly Detection Prototype for Smart X Situational Intelligence, Zenodo, 2026. DOI: 10.5281/zenodo.21058030.
-
-## Disclaimer
-
-All sensing data and drone images in this repository are synthetic. They are created only to demonstrate the proposed architecture and should not be used for real environmental or safety decisions.
-
-## Citation and archive
-
-This repository is prepared for archival through Zenodo. After creating a GitHub release, Zenodo will archive the release and mint a DOI. Please cite the archived release DOI when using the software or simulated dataset.
-
-## Reproducibility note
-
-The data provided in this repository are simulated pollutant-weather, telemetry, and drone-image feature data. They are intended to demonstrate the sensing-to-decision workflow and ensemble anomaly detection logic. They are not field measurements.
-
-## Suggested repository citation
-
-Hermanus, D. R., Supangkat, S. H., and Hidayat, F., Drone AI Situational Intelligence Layer for Smart X: Streamlit Prototype and Simulated Dataset, Version 1.0.0, Zenodo, 2026, doi: 10.5281/zenodo.21058030.
+After this release is published in Zenodo, cite the **new version DOI assigned by Zenodo**. Do not reuse an earlier version DOI as the identifier for Version 1.2.0.

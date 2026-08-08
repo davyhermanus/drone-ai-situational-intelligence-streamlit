@@ -1,7 +1,7 @@
 {
-  "title": "Drone AI Situational Intelligence Layer for Smart X: Streamlit Prototype and Simulated Dataset",
+  "title": "Advanced Drone Sensing Framework for Smart X Situational Intelligence: Streamlit Reproducibility Package",
   "upload_type": "software",
-  "description": "A reproducible Streamlit prototype for Drone-AI ensemble anomaly detection using simulated pollutant-weather sensing data and drone-image features. The package supports a sensing-to-decision workflow for Smart X situational intelligence and includes simulated data, source code, requirements, and documentation.",
+  "description": "Reproducibility package for the revised manuscript Advanced Drone Sensing Framework for Smart X Situational Intelligence. The release contains the Streamlit prototype, exact controlled synthetic pollutant-weather, telemetry, and image-feature inputs, two-branch Isolation Forest and rule-based scoring code, fixed experiment configuration, paper-ready outputs for baseline detection, alpha sensitivity, modality ablation, and controlled-noise robustness, and persistent human-validation support. The package is limited to controlled synthetic evaluation and does not contain field measurements or claim field-validated deployment performance. Digital Twin, Data Lakehouse, and distributed edge-cloud services are architectural-readiness components rather than deployed production services.",
   "creators": [
     {
       "name": "Hermanus, Davy Ronald",
@@ -18,13 +18,17 @@
   ],
   "keywords": [
     "Drone AI",
-    "Smart X",
     "situational intelligence",
     "ensemble anomaly detection",
+    "Isolation Forest",
+    "multimodal sensing",
+    "human-in-the-loop",
     "Streamlit",
-    "simulated dataset"
+    "reproducibility",
+    "synthetic dataset"
   ],
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.2.0",
+  "publication_date": "2026-08-08",
   "related_identifiers": []
 }

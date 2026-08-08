@@ -1,0 +1,25 @@
+TITLE
+Advanced Drone Sensing Framework for Smart X Situational Intelligence: Streamlit Reproducibility Package
+
+RESOURCE TYPE
+Software
+
+VERSION
+1.2.0
+
+PUBLICATION DATE
+2026-08-08
+
+CREATORS
+Davy Ronald Hermanus — School of Electrical Engineering and Informatics, Institut Teknologi Bandung, Indonesia; School of Computer Science, Bina Nusantara University, Indonesia
+Suhono Harso Supangkat — School of Electrical Engineering and Informatics, Institut Teknologi Bandung, Indonesia
+Fadhil Hidayat — School of Electrical Engineering and Informatics, Institut Teknologi Bandung, Indonesia
+
+KEYWORDS
+Drone AI; situational intelligence; ensemble anomaly detection; Isolation Forest; multimodal sensing; human-in-the-loop; Streamlit; reproducibility; synthetic dataset
+
+LICENSE
+MIT for the software. Synthetic data and generated sample images are separately documented as CC BY 4.0 in LICENSE-DATA.md.
+
+DESCRIPTION
+This release provides the reproducibility package associated with the revised manuscript “Advanced Drone Sensing Framework for Smart X Situational Intelligence.” It contains the Streamlit prototype, exact controlled synthetic pollutant-weather, telemetry, and image-feature inputs, two-branch Isolation Forest and transparent rule-based scoring code, fixed experimental configuration, and paper-supporting outputs for baseline anomaly detection, alpha sensitivity, modality ablation, and controlled-noise robustness. The controlled mission contains 160 records (114 normal and 46 anomalous: 18 pollution-plume, 16 fire-smoke, and 12 industrial-dust records). Both branches use 200-tree Isolation Forest models with contamination 0.10 and fixed seeds 12 and 24. The baseline ensemble uses alpha=0.60 and operational thresholds 0.45/0.60/0.75. The archive also includes persistent human-validation support, a standalone experiment runner, locked dependencies, a data dictionary, and manuscript-to-artifact mapping. All data and sample images are synthetic. Reported quantitative results assess agreement with controlled synthetic labels and demonstrate reproducible framework feasibility; they are not field-validated accuracy or deployment-performance claims. Digital Twin, Data Lakehouse, and distributed edge-cloud services remain architectural-readiness components and are not implemented as production services in this release.

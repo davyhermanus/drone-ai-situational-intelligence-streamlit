@@ -1,0 +1,22 @@
+field,branch,unit_or_range,role,simulation_note
+mission_minute,context,minutes,mission sequence,2-minute interval
+timestamp,context,datetime,temporal alignment,synthetic start 2026-01-01 08:00
+latitude,telemetry,decimal degrees,geospatial context,Bandung-like synthetic route
+longitude,telemetry,decimal degrees,geospatial context,Bandung-like synthetic route
+altitude,pollutant-weather,m,pollutant branch feature,synthetic flight variation
+pm25,pollutant-weather,simulated concentration,pollutant branch feature,anomaly injection in all event windows
+pm10,pollutant-weather,simulated concentration,pollutant branch feature,anomaly injection in all event windows
+co2,pollutant-weather,simulated concentration,pollutant branch feature,increased during fire-smoke
+no2,pollutant-weather,simulated concentration,pollutant branch feature,increased during pollution plume
+so2,pollutant-weather,simulated concentration,pollutant branch feature,increased during industrial dust
+voc,pollutant-weather,simulated concentration,pollutant branch feature,increased during pollution plume
+temperature,pollutant-weather,deg C,pollutant branch feature,increased during fire-smoke
+humidity,pollutant-weather,percent,pollutant branch feature,decreased during fire-smoke
+wind_speed,pollutant-weather,simulated speed,pollutant branch feature,baseline periodic variation
+red_index,image,0-1,image branch feature,computed from synthetic image
+smoke_index,image,0-1 approximate,image branch feature,computed from darkness and variation
+brightness,image,0-1,image branch feature,mean grayscale
+contrast,image,0-1,image branch feature,grayscale standard deviation
+texture,image,nonnegative,image branch feature,adjacent-pixel differences
+edge_density,image,0-1,image branch feature,gradient threshold ratio
+simulated_event,label,categorical,known synthetic ground truth,normal pollution_plume fire_smoke industrial_dust

@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you use this software or simulated dataset, please cite it using the metadata below."
-title: "Drone AI Situational Intelligence Layer for Smart X: Streamlit Prototype and Simulated Dataset"
+message: "If you use this software or simulated dataset, please cite the archived Zenodo release."
+title: "Advanced Drone Sensing Framework for Smart X Situational Intelligence: Streamlit Reproducibility Package"
 type: software
 authors:
   - family-names: Hermanus
@@ -13,15 +13,17 @@ authors:
   - family-names: Hidayat
     given-names: Fadhil
     affiliation: "School of Electrical Engineering and Informatics, Institut Teknologi Bandung, Indonesia"
-abstract: "A reproducible Streamlit prototype for Drone-AI ensemble anomaly detection using simulated pollutant-weather sensing data and drone-image features for Smart X situational intelligence."
+abstract: "Reproducibility package for a controlled synthetic Drone-AI situational-intelligence experiment using two Isolation Forest branches, rule-based evidence, ensemble scoring, sensitivity analysis, modality ablation, controlled-noise robustness, and persistent human validation."
 keywords:
   - Drone AI
-  - Smart X
   - situational intelligence
   - ensemble anomaly detection
+  - Isolation Forest
+  - multimodal sensing
+  - human-in-the-loop
   - Streamlit
-  - simulated dataset
+  - reproducibility
+  - synthetic dataset
 license: MIT
-version: 1.0.0
-date-released: 2026-06-30
-repository-code: "https://github.com/USERNAME/drone-ai-situational-intelligence-streamlit"
+version: 1.2.0
+date-released: 2026-08-08
